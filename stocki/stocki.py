@@ -1,3 +1,4 @@
+# coding: utf-8
 import os
 import sys
 import json
@@ -261,8 +262,8 @@ def load(ticker):
 
 
 def help():
-    print(''.join([BOLD, "stocki v0.0.1 – Made by @andrewrporter", END, '\n']))
-    print("The CLI Interface for fetching stock market data.\n")
+    print(''.join([BOLD, "stocki v0.0.1 – Made by @andrewrporter", END, "\n"]))
+    print("The CLI for fetching stock market data.\n")
     print(''.join([UNDERLINE, "Usage", END, ":", " $ stocki ", YELLOW, "ticker", END]))
 
 
