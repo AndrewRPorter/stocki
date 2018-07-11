@@ -3,8 +3,6 @@
 `stocki` is a CLI interface for fetching stock market data. Data provided for free by
 [IEX](https://iextrading.com/developer/). View [IEX’s Terms of Use](https://iextrading.com/api-exhibit-a/).
 
-![demo](assets/demo.gif)
-
 ## Installation
 
 `$ pip install statcode`
