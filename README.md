@@ -5,7 +5,7 @@
 
 ## Installation
 
-`$ pip install statcode`
+`$ pip install stocki`
 
 Requires Python 3.0 or higher.
 
