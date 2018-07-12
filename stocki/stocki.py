@@ -1,7 +1,5 @@
 # coding: utf-8
-import os
 import sys
-import json
 import urwid
 import requests
 from urwid.widget import BOX, FLOW, FIXED
@@ -234,25 +232,26 @@ class App():
 
 
 def load(ticker):
+    base_url = 'https://api.iextrading.com/1.0/stock'
+    ticker = ticker.upper()
+
     try:
-        ticker = ticker.upper()
+        r_quote = requests.get("{}/{}/quote".format(base_url, ticker))
+        r_info = requests.get("{}/{}/company".format(base_url, ticker))
 
-        r_quote = requests.get("https://api.iextrading.com/1.0/stock/%s/quote" % ticker)
-        r_info = requests.get("https://api.iextrading.com/1.0/stock/%s/company" % ticker)
-
-        data = json.loads(r_quote.content.decode('utf-8'))
-        data.update(json.loads(r_info.content.decode('utf-8')))
+        data = r_quote.json()
+        data.update(r_info.json())
 
         pile = urwid.Pile([
             urwid.Text("STOCKI: The CLI Interface for fetching stock market data\n", align="center"),
-            urwid.Text(("title", "%s INFO" % (ticker,))),
-            urwid.Padding(urwid.Text(''.join(["Name", ": ", data["companyName"]])), left=5),
-            urwid.Padding(urwid.Text(''.join(["Price", ": ", str(data["extendedPrice"])])), left=5),
-            urwid.Padding(urwid.Text(''.join(["Change", ": ", str(data["change"]), " (", str(data["changePercent"]*100),"%)"])), left=5),
-            urwid.Padding(urwid.Text(''.join(["Volume", ": ", str(data["latestVolume"])])), left=5),
-            urwid.Padding(urwid.Text(''.join(["Market Cap", ": ", str(data["marketCap"]), "\n"])), left=5),
+            urwid.Text(("title", "{} INFO".format(ticker))),
+            urwid.Padding(urwid.Text("Name: {}".format(data["companyName"])), left=5),
+            urwid.Padding(urwid.Text("Price: {}".format(data["extendedPrice"])), left=5),
+            urwid.Padding(urwid.Text("Change: {} ({:%})".format(data["change"], data["changePercent"])), left=5),
+            urwid.Padding(urwid.Text("Volume: {}".format(data["latestVolume"])), left=5),
+            urwid.Padding(urwid.Text("Market Cap: {}\n".format(data["marketCap"])), left=5),
             urwid.Text(("title", "DESCRIPTION")),
-            urwid.Padding(urwid.Text(''.join([data["description"]])), left=5),
+            urwid.Padding(urwid.Text(data["description"]), left=5),
         ])
         padding = urwid.Padding(Scrollable(pile), left=1, right=1)
 
