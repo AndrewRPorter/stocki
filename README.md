@@ -1,3 +1,5 @@
+[![PyPi Version](https://badge.fury.io/py/stocki.svg)](https://badge.fury.io/py/stocki)
+
 # stocki
 
 `stocki` is a CLI interface for fetching stock market data. Data provided for free by
