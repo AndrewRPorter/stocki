@@ -27,5 +27,4 @@ setup(
     url="https://github.com/andrewrporter/stocki",
     author="AndrewRPorter",
     author_email="porter.r.andrew@gmail.com",
-    license="MIT"
 )
