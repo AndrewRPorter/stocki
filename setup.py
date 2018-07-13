@@ -14,7 +14,7 @@ except:
 
 setup(
     name="stocki",
-    version="v0.1.0",
+    version="v0.1.1",
     description='The CLI for fetching stock market data.',
     long_description=_readme,
     license=_license,
