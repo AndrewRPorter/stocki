@@ -4,7 +4,9 @@ import urwid
 import requests
 from urwid.widget import BOX, FLOW, FIXED
 
+
 VERSION = "0.1.1"
+
 
 SCROLL_LINE_UP = "line up"
 SCROLL_LINE_DOWN = "line down"
@@ -29,8 +31,11 @@ class Scrollable(urwid.WidgetDecoration):
         return True
 
     def __init__(self, widget):
-        """
-        Box widget (wrapper) that makes a fixed or flow widget vertically scrollable.
+        """Box widget that makes a fixed or flow widget vertically scrollable.
+
+        Note:
+            This code is based off of code from:
+                https://github.com/rndusr/stig/blob/master/stig/tui/scroll.py
         """
 
         self._trim_top = 0
@@ -108,9 +113,9 @@ class Scrollable(urwid.WidgetDecoration):
             self._scroll_action = SCROLL_PAGE_UP
         elif command_map[key] == urwid.CURSOR_PAGE_DOWN:
             self._scroll_action = SCROLL_PAGE_DOWN
-        elif command_map[key] == urwid.CURSOR_MAX_LEFT:  # "home"
+        elif command_map[key] == urwid.CURSOR_MAX_LEFT:
             self._scroll_action = SCROLL_TO_TOP
-        elif command_map[key] == urwid.CURSOR_MAX_RIGHT:  # "end"
+        elif command_map[key] == urwid.CURSOR_MAX_RIGHT:
             self._scroll_action = SCROLL_TO_END
         else:
             return key
@@ -133,10 +138,6 @@ class Scrollable(urwid.WidgetDecoration):
             return False
 
     def _adjust_trim_top(self, canv, size):
-        """
-        Adjust self._trim_top according to self._scroll_action
-        """
-
         action = self._scroll_action
         self._scroll_action = None
 
@@ -287,4 +288,4 @@ def main():
         if content:
             App(content)
         else:
-            print(''.join([RED, "Sorry, stocki doesn't recognize: ", ticker, END]))
+            print(''.join([RED, "stocki doesn't recognize: '{}'".format(ticker), END]))
