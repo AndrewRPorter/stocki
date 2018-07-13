@@ -20,6 +20,12 @@ END = "\033[0m"
 
 
 class Scrollable(urwid.WidgetDecoration):
+    def sizing(self):
+        return frozenset([BOX])
+
+    def selectable(self):
+        return True
+
     def __init__(self, widget):
         """
         Box widget (wrapper) that makes a fixed or flow widget vertically scrollable.
@@ -110,6 +116,12 @@ class Scrollable(urwid.WidgetDecoration):
         self._invalidate()
 
     def mouse_event(self, size, event, button, col, row, focus):
+        if button == 5:
+            self._scroll_action = SCROLL_LINE_DOWN
+        elif button == 4:
+            self._scroll_action = SCROLL_LINE_UP
+
+        self._invalidate()
         ow = self._original_widget
         if hasattr(ow, "mouse_event"):
             ow_size = self._get_original_widget_size(size)
@@ -226,12 +238,19 @@ def load(ticker):
 
         pile = urwid.Pile([
             urwid.Text("STOCKI: The CLI Interface for fetching stock market data\n", align="center"),
-            urwid.Text(("title", "{} INFO".format(ticker))),
-            urwid.Padding(urwid.Text("Name: {}".format(data["companyName"])), left=5),
-            urwid.Padding(urwid.Text("Price: {}".format(data["extendedPrice"])), left=5),
+            urwid.Text(("title", "{} OVERVIEW".format(ticker))),
+            urwid.Padding(urwid.Text("Price: {}".format(data["latestPrice"])), left=5),
             urwid.Padding(urwid.Text("Change: {} ({:%})".format(data["change"], data["changePercent"])), left=5),
             urwid.Padding(urwid.Text("Volume: {}".format(data["latestVolume"])), left=5),
-            urwid.Padding(urwid.Text("Market Cap: {}\n".format(data["marketCap"])), left=5),
+            urwid.Padding(urwid.Text("Market Cap: {}".format(data["marketCap"])), left=5),
+            urwid.Padding(urwid.Text("52 Week Range: {}-{}".format(data["week52Low"], data["week52High"])), left=5),
+            urwid.Padding(urwid.Text("YTD Change: {:%}\n".format(float(data["ytdChange"]))), left=5),
+            urwid.Text(("title", "COMPANY INFO")),
+            urwid.Padding(urwid.Text("Name: {}".format(data["companyName"])), left=5),
+            urwid.Padding(urwid.Text("Industry: {}".format(data["industry"])), left=5),
+            urwid.Padding(urwid.Text("Sector: {}".format(data["sector"])), left=5),
+            urwid.Padding(urwid.Text("Website: {}".format(data["website"])), left=5),
+            urwid.Padding(urwid.Text("CEO: {}\n".format(data["CEO"])), left=5),
             urwid.Text(("title", "DESCRIPTION")),
             urwid.Padding(urwid.Text(data["description"]), left=5),
         ])
