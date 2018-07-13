@@ -20,16 +20,6 @@ END = "\033[0m"
 
 
 class Scrollable(urwid.WidgetDecoration):
-
-
-    def sizing(self):
-        return frozenset([BOX])
-
-
-    def selectable(self):
-        return True
-
-
     def __init__(self, widget):
         """
         Box widget (wrapper) that makes a fixed or flow widget vertically scrollable.
@@ -42,10 +32,8 @@ class Scrollable(urwid.WidgetDecoration):
         self._rows_max_cached = 0
         self.__super.__init__(widget)
 
-
     def render(self, size, focus=False):
         maxcol, maxrow = size
-
         # Render complete original widget
         ow = self._original_widget
         ow_size = self._get_original_widget_size(size)
@@ -54,15 +42,15 @@ class Scrollable(urwid.WidgetDecoration):
 
         if canv_cols <= maxcol:
             pad_width = maxcol - canv_cols
-            if pad_width > 0: # Canvas is narrower than available horizontal space
+            if pad_width > 0:
                 canv.pad_trim_left_right(0, pad_width)
 
         if canv_rows <= maxrow:
             fill_height = maxrow - canv_rows
-            if fill_height > 0: # Canvas is lower than available vertical space
+            if fill_height > 0:
                 canv.pad_trim_top_bottom(0, fill_height)
 
-        if canv_cols <= maxcol and canv_rows <= maxrow: # Canvas is small enough to fit without trimming
+        if canv_cols <= maxcol and canv_rows <= maxrow:
             return canv
 
         self._adjust_trim_top(canv, size)
@@ -89,7 +77,6 @@ class Scrollable(urwid.WidgetDecoration):
 
         return canv
 
-
     def keypress(self, size, key):
         if self._forward_keypress:
             ow = self._original_widget
@@ -113,15 +100,14 @@ class Scrollable(urwid.WidgetDecoration):
             self._scroll_action = SCROLL_PAGE_UP
         elif command_map[key] == urwid.CURSOR_PAGE_DOWN:
             self._scroll_action = SCROLL_PAGE_DOWN
-        elif command_map[key] == urwid.CURSOR_MAX_LEFT: # "home"
+        elif command_map[key] == urwid.CURSOR_MAX_LEFT:  # "home"
             self._scroll_action = SCROLL_TO_TOP
-        elif command_map[key] == urwid.CURSOR_MAX_RIGHT: # "end"
+        elif command_map[key] == urwid.CURSOR_MAX_RIGHT:  # "end"
             self._scroll_action = SCROLL_TO_END
         else:
             return key
 
         self._invalidate()
-
 
     def mouse_event(self, size, event, button, col, row, focus):
         ow = self._original_widget
@@ -131,7 +117,6 @@ class Scrollable(urwid.WidgetDecoration):
             return ow.mouse_event(ow_size, event, button, col, row, focus)
         else:
             return False
-
 
     def _adjust_trim_top(self, canv, size):
         """
@@ -179,7 +164,6 @@ class Scrollable(urwid.WidgetDecoration):
             elif cursrow >= self._trim_top + maxrow:
                 self._trim_top = max(0, cursrow - maxrow + 1)
 
-
     def _get_original_widget_size(self, size):
         ow = self._original_widget
         sizing = ow.sizing()
@@ -188,15 +172,12 @@ class Scrollable(urwid.WidgetDecoration):
         elif FLOW in sizing:
             return (size[0],)
 
-
     def get_scrollpos(self, size=None, focus=False):
         return self._trim_top
-
 
     def set_scrollpos(self, position):
         self._trim_top = int(position)
         self._invalidate()
-
 
     def rows_max(self, size=None, focus=False):
         if size is not None:
@@ -208,23 +189,24 @@ class Scrollable(urwid.WidgetDecoration):
             elif FLOW in sizing:
                 self._rows_max_cached = ow.rows(ow_size, focus)
             else:
-                raise RuntimeError("Not a flow/box widget: %r" % self._original_widget)
+                raise RuntimeError("Not a flow/box widget: %r" %
+                                   self._original_widget)
         return self._rows_max_cached
 
 
 class App():
     def __init__(self, content):
         self._palette = [
-            ("menu", "black", "light cyan", "standout"),
+            ("menu", "black", "light gray", "standout"),
             ("title", "default,bold", "default", "bold")
         ]
 
-        menu = urwid.Text([u'\n', ("menu", u" Q "), ("light gray", u" Quit")]) # TODO: Make like man pages (vim input)
+        menu = urwid.Text([u'\n', ("menu", u" Q "), ("light gray", u" Quit")])
         layout = urwid.Frame(body=content, footer=menu)
 
-        main_loop = urwid.MainLoop(layout, self._palette, unhandled_input=self._handle_input)
+        main_loop = urwid.MainLoop(layout, self._palette,
+                                   unhandled_input=self._handle_input)
         main_loop.run()
-
 
     def _handle_input(self, input):
         if input in ('q', 'Q'):
@@ -256,7 +238,7 @@ def load(ticker):
         padding = urwid.Padding(Scrollable(pile), left=1, right=1)
 
         return padding
-    except:
+    except Exception as e:
         return None
 
 
