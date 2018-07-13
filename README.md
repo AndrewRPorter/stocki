@@ -1,4 +1,5 @@
 [![PyPi Version](https://badge.fury.io/py/stocki.svg)](https://badge.fury.io/py/stocki)
+[![Build Status](https://travis-ci.com/AndrewRPorter/stocki.svg?branch=master)](https://travis-ci.com/AndrewRPorter/stocki)
 
 # stocki
 
