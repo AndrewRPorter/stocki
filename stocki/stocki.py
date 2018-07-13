@@ -257,6 +257,7 @@ def load(ticker):
             urwid.Text(("title", "DESCRIPTION")),
             urwid.Padding(urwid.Text(data["description"]), left=5),
         ])
+
         padding = urwid.Padding(Scrollable(pile), left=1, right=1)
 
         return padding

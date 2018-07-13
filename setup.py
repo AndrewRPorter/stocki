@@ -5,18 +5,18 @@ from setuptools import setup
 try:
     with open('LICENSE.txt', 'r') as f:
         _license = f.read()
-except:
+except Exception as e:
     _license = ''
 
 
 try:
     with open('README.md', 'r') as f:
         _readme = f.read()
-except:
+except Exception as e:
     _readme = ''
 
 
-install_requires = ["requests", "urwid"]
+install_requires = ["requests", "urwid", "pycodestyle"]
 
 
 setup(
