@@ -1,10 +1,8 @@
 import sys
 import requests
 
-if sys.version_info < (2,7):
-    from unittest2 import main as test_main, TestCase
-else:
-    from unittest import main as test_main, TestCase
+from unittest import main as test_main, TestCase
+
 
 class TestStocki(TestCase):
     def setUp(self):
@@ -33,6 +31,7 @@ class TestStocki(TestCase):
             with self.assertRaises(ValueError):
                 data = r_quote.json()
                 data.update(r_info.json())
+
 
 if __name__ == "__main__":
     test_main()
