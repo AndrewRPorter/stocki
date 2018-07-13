@@ -1,7 +1,7 @@
 import sys
 import requests
 
-if sys.version_info < (2.7):
+if sys.version_info < (2,7):
     from unittest2 import main as test_main, TestCase
 else:
     from unittest import main as test_main, TestCase
@@ -24,7 +24,7 @@ class TestStocki(TestCase):
             self.assertNotEqual(data, {})
 
     def test_invalid_tickers(self):
-        invalid_tickers = ["", "ABCDEFGH", "/"]
+        invalid_tickers = ["ABCDEFGH", "/"]
 
         for ticker in invalid_tickers:
             r_quote = requests.get("{}/{}/quote".format(self.base_url, ticker))
