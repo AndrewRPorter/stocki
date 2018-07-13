@@ -1,3 +1,4 @@
+import sys
 from setuptools import setup
 
 try:
@@ -12,13 +13,19 @@ try:
 except:
     _readme = ''
 
+install_requires = ["requests", "urwid"]
+
+if sys.version_info < (2,6):
+    install_requires.append('unittest2==0.8.0')
+    install_requires.append('argparse')
+
 setup(
     name="stocki",
     version="v0.1.1",
     description='The CLI for fetching stock market data.',
     long_description=_readme,
     license=_license,
-    install_requires=["requests", "urwid"],
+    install_requires=install_requires,
     packages=["stocki"],
     entry_points={"console_scripts": ["stocki = stocki.stocki:main"]},
     include_package_data=True,
