@@ -2,10 +2,11 @@
 import sys
 import urwid
 import requests
+import argparse
 from urwid.widget import BOX, FLOW, FIXED
 
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 
 SCROLL_LINE_UP = "line up"
@@ -268,7 +269,7 @@ def load(ticker):
 def help():
     print(''.join([BOLD, "stocki {} – Made by @andrewrporter".format(VERSION), END, "\n"]))
     print("The CLI for fetching stock market data.\n")
-    print(''.join([UNDERLINE, "Usage", END, ":", " $ stocki ", YELLOW, "ticker", END]))
+    print(''.join([UNDERLINE, "Usage", END, ":", " $ stocki ", YELLOW, "[ticker]", YELLOW, " [-v/--version]", YELLOW, " [-h/--help]", END]))
 
 
 def version():
@@ -276,17 +277,22 @@ def version():
 
 
 def main():
-    if len(sys.argv) == 1:
-        help()
-    elif sys.argv[1].lower() in ("-h", "--help"):
-        help()
-    elif sys.argv[1].lower() in ("-v", "--version"):
-        version()
-    else:
-        ticker = sys.argv[1]
-        content = load(ticker)
+    parser = argparse.ArgumentParser(prog='PROG', add_help=False)
+    parser.add_argument("ticker", type=str, nargs='?')
+    parser.add_argument("-v", "--version", action="store_true")
+    parser.add_argument("-h", "--help", action="store_true")
+    args = parser.parse_args()
+
+    if args.ticker:
+        content = load(args.ticker)
 
         if content:
             App(content)
         else:
             print(''.join([RED, "stocki doesn't recognize: '{}'".format(ticker), END]))
+    elif args.version:
+        version()
+    elif args.help:
+        help()
+    else:
+        help()
