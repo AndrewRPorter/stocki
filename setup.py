@@ -21,7 +21,7 @@ install_requires = ["requests", "urwid", "pycodestyle"]
 
 setup(
     name="stocki",
-    version="v0.1.2",
+    version="v0.1.3",
     description='The CLI for fetching stock market data.',
     long_description=_readme,
     license=_license,

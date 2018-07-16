@@ -6,7 +6,7 @@ import argparse
 from urwid.widget import BOX, FLOW, FIXED
 
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 
 
 SCROLL_LINE_UP = "line up"
