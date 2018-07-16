@@ -277,7 +277,7 @@ def version():
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='PROG', add_help=False)
+    parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("ticker", type=str, nargs='?')
     parser.add_argument("-v", "--version", action="store_true")
     parser.add_argument("-h", "--help", action="store_true")
@@ -289,7 +289,7 @@ def main():
         if content:
             App(content)
         else:
-            print(''.join([RED, "stocki doesn't recognize: '{}'".format(ticker), END]))
+            print(''.join([RED, "stocki doesn't recognize: '{}'".format(args.ticker), END]))
     elif args.version:
         version()
     elif args.help:
