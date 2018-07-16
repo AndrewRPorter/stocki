@@ -263,7 +263,6 @@ def load(ticker):
 
         return padding
     except Exception as e:
-        print(e)
         return None
 
 
