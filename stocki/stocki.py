@@ -244,11 +244,11 @@ def load(ticker):
             urwid.Text("STOCKI: The CLI Interface for fetching stock market data\n", align="center"),
             urwid.Text(("title", "{} OVERVIEW".format(ticker))),
             urwid.Padding(urwid.Text("Price: {}".format(data["latestPrice"])), left=5),
-            urwid.Padding(urwid.Text("Change: {} ({:%})".format(data["change"], data["changePercent"])), left=5),
+            urwid.Padding(urwid.Text("Change: {} ({:.2f}%)".format(data["change"], (data["changePercent"]))), left=5),
             urwid.Padding(urwid.Text("Volume: {}".format(data["latestVolume"])), left=5),
             urwid.Padding(urwid.Text("Market Cap: {}".format(data["marketCap"])), left=5),
-            urwid.Padding(urwid.Text("52 Week Range: {}-{}".format(data["week52Low"], data["week52High"])), left=5),
-            urwid.Padding(urwid.Text("YTD Change: {:%}\n".format(float(data["ytdChange"]))), left=5),
+            urwid.Padding(urwid.Text("52 Week Range: {} - {}".format(data["week52Low"], data["week52High"])), left=5),
+            urwid.Padding(urwid.Text("YTD Change: {:.2f}%\n".format(float(data["ytdChange"]))), left=5),
             urwid.Text(("title", "COMPANY INFO")),
             urwid.Padding(urwid.Text("Name: {}".format(data["companyName"])), left=5),
             urwid.Padding(urwid.Text("Industry: {}".format(data["industry"])), left=5),
@@ -263,6 +263,7 @@ def load(ticker):
 
         return padding
     except Exception as e:
+        print(e)
         return None
 
 
