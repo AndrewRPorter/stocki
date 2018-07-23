@@ -1,5 +1,6 @@
 [![PyPi Version](https://badge.fury.io/py/stocki.svg)](https://badge.fury.io/py/stocki)
 [![Build Status](https://travis-ci.com/AndrewRPorter/stocki.svg?branch=master)](https://travis-ci.com/AndrewRPorter/stocki)
+[![Downloads](http://pepy.tech/badge/stocki)](http://pepy.tech/count/stocki)
 
 # stocki
 
