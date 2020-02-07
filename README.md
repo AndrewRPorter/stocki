@@ -4,6 +4,8 @@
 
 # stocki
 
+**Note: the IEX [api](https://iextrading.com/developers/docs/) now requires a key for authentication, thus breaking this project.**
+
 `stocki` is a CLI interface for fetching stock market data. Data provided for free by
 [IEX](https://iextrading.com/developer/). View [IEX’s Terms of Use](https://iextrading.com/api-exhibit-a/).
 
