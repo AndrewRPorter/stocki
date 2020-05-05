@@ -13,11 +13,6 @@ class TestStocki(TestCase):
     def setUp(cls):
         cls.ticker = "AAPL"
 
-    def test_version(self):
-        call = subprocess.check_output("python stocki/__main__.py -v".split())
-        call = call.decode("utf-8")
-        self.assertEqual(str(call).strip(), "stocki {}".format(VERSION))
-
     def test_style(self):
         ignore = []
         file_list = []
