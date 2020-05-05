@@ -227,7 +227,11 @@ def load(ticker_str):
     ticker_str = ticker_str.upper()
     ticker = yf.Ticker(ticker_str)
 
-    data = ticker.info
+    try:
+        data = ticker.info
+    except ValueError:
+        return None
+
     history = ticker.history(period="1d")
     current_price = history["Close"][0]
 
@@ -255,19 +259,7 @@ def load(ticker_str):
         ]
     )
 
-    """
-                
-        
-        
-        urwid.Padding(urwid.Text("Website: {}".format(data["website"])), left=5),
-        urwid.Padding(urwid.Text("CEO: {}\n".format(data["CEO"])), left=5),
-        urwid.Text(("title", "DESCRIPTION")),
-        urwid.Padding(urwid.Text(data["description"]), left=5),
-    """
-
-    padding = urwid.Padding(Scrollable(pile), left=1, right=1)
-
-    return padding
+    return urwid.Padding(Scrollable(pile), left=1, right=1)
 
 
 def help():
