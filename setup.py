@@ -1,19 +1,17 @@
-import sys
 from setuptools import setup
 
-
 try:
-    with open('LICENSE.txt', 'r') as f:
+    with open("LICENSE.txt", "r") as f:
         _license = f.read()
-except Exception as e:
-    _license = ''
+except Exception:
+    _license = ""
 
 
 try:
-    with open('README.md', 'r') as f:
+    with open("README.md", "r") as f:
         _readme = f.read()
-except Exception as e:
-    _readme = ''
+except Exception:
+    _readme = ""
 
 
 install_requires = ["requests", "urwid", "pycodestyle"]
@@ -21,8 +19,8 @@ install_requires = ["requests", "urwid", "pycodestyle"]
 
 setup(
     name="stocki",
-    version="v0.1.3",
-    description='The CLI for fetching stock market data.',
+    version="0.2.0",
+    description="The CLI for fetching stock market data.",
     long_description=_readme,
     license=_license,
     install_requires=install_requires,

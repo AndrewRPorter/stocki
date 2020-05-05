@@ -1,12 +1,11 @@
 # coding: utf-8
-import sys
-import urwid
-import requests
 import argparse
-from urwid.widget import BOX, FLOW, FIXED
 
+import urwid
+import yfinance as yf
+from urwid.widget import BOX, FIXED, FLOW
 
-VERSION = "0.1.3"
+VERSION = "0.2.0"
 
 
 SCROLL_LINE_UP = "line up"
@@ -17,10 +16,10 @@ SCROLL_TO_TOP = "to top"
 SCROLL_TO_END = "to end"
 
 
-YELLOW = '\033[33m'
+YELLOW = "\033[33m"
 RED = "\033[31m"
-BOLD = '\033[1m'
-UNDERLINE = '\033[4m'
+BOLD = "\033[1m"
+UNDERLINE = "\033[4m"
 END = "\033[0m"
 
 
@@ -82,7 +81,7 @@ class Scrollable(urwid.WidgetDecoration):
 
         # Disable cursor display if cursor is outside of visible canvas parts
         if canv.cursor is not None:
-            curscol, cursrow = canv.cursor
+            _, cursrow = canv.cursor
             if cursrow >= maxrow or cursrow < 0:
                 canv.cursor = None
 
@@ -162,9 +161,9 @@ class Scrollable(urwid.WidgetDecoration):
         elif action == SCROLL_LINE_DOWN:
             self._trim_top = ensure_bounds(trim_top + 1)
         elif action == SCROLL_PAGE_UP:
-            self._trim_top = ensure_bounds(trim_top - maxrow+1)
+            self._trim_top = ensure_bounds(trim_top - maxrow + 1)
         elif action == SCROLL_PAGE_DOWN:
-            self._trim_top = ensure_bounds(trim_top + maxrow-1)
+            self._trim_top = ensure_bounds(trim_top + maxrow - 1)
         elif action == SCROLL_TO_TOP:
             self._trim_top = 0
         elif action == SCROLL_TO_END:
@@ -205,71 +204,93 @@ class Scrollable(urwid.WidgetDecoration):
             elif FLOW in sizing:
                 self._rows_max_cached = ow.rows(ow_size, focus)
             else:
-                raise RuntimeError("Not a flow/box widget: %r" %
-                                   self._original_widget)
+                raise RuntimeError("Not a flow/box widget: %r" % self._original_widget)
         return self._rows_max_cached
 
 
-class App():
+class App:
     def __init__(self, content):
-        self._palette = [
-            ("menu", "black", "light gray", "standout"),
-            ("title", "default,bold", "default", "bold")
-        ]
+        self._palette = [("menu", "black", "light gray", "standout"), ("title", "default,bold", "default", "bold")]
 
-        menu = urwid.Text([u'\n', ("menu", u" Q "), ("light gray", u" Quit")])
+        menu = urwid.Text([u"\n", ("menu", u" Q "), ("light gray", u" Quit")])
         layout = urwid.Frame(body=content, footer=menu)
 
-        main_loop = urwid.MainLoop(layout, self._palette,
-                                   unhandled_input=self._handle_input)
+        main_loop = urwid.MainLoop(layout, self._palette, unhandled_input=self._handle_input)
         main_loop.run()
 
     def _handle_input(self, input):
-        if input in ('q', 'Q'):
+        if input in ("q", "Q"):
             raise urwid.ExitMainLoop()
 
 
-def load(ticker):
-    base_url = 'https://api.iextrading.com/1.0/stock'
-    ticker = ticker.upper()
+def load(ticker_str):
+    ticker_str = ticker_str.upper()
+    ticker = yf.Ticker(ticker_str)
 
-    try:
-        r_quote = requests.get("{}/{}/quote".format(base_url, ticker))
-        r_info = requests.get("{}/{}/company".format(base_url, ticker))
+    data = ticker.info
+    history = ticker.history(period="1d")
+    current_price = history["Close"][0]
 
-        data = r_quote.json()
-        data.update(r_info.json())
+    change = current_price - data["previousClose"]
+    change_percent = (change / data["previousClose"]) * 100
 
-        pile = urwid.Pile([
+    pile = urwid.Pile(
+        [
             urwid.Text("STOCKI: The CLI Interface for fetching stock market data\n", align="center"),
-            urwid.Text(("title", "{} OVERVIEW".format(ticker))),
-            urwid.Padding(urwid.Text("Price: {}".format(data["latestPrice"])), left=5),
-            urwid.Padding(urwid.Text("Change: {} ({:.2f}%)".format(data["change"], (data["changePercent"]))), left=5),
-            urwid.Padding(urwid.Text("Volume: {}".format(data["latestVolume"])), left=5),
+            urwid.Text(("title", "{} OVERVIEW".format(ticker_str))),
+            urwid.Padding(urwid.Text("Price: {}".format(current_price)), left=5),
+            urwid.Padding(urwid.Text("Change: {:.2f} ({:.2f}%)".format(change, change_percent)), left=5),
+            urwid.Padding(urwid.Text("Volume: {}".format(data["volume"])), left=5),
             urwid.Padding(urwid.Text("Market Cap: {}".format(data["marketCap"])), left=5),
-            urwid.Padding(urwid.Text("52 Week Range: {} - {}".format(data["week52Low"], data["week52High"])), left=5),
-            urwid.Padding(urwid.Text("YTD Change: {:.2f}%\n".format(float(data["ytdChange"]))), left=5),
+            urwid.Padding(
+                urwid.Text("52 Week Range: {} - {}".format(data["fiftyTwoWeekLow"], data["fiftyTwoWeekHigh"])), left=5
+            ),
             urwid.Text(("title", "COMPANY INFO")),
-            urwid.Padding(urwid.Text("Name: {}".format(data["companyName"])), left=5),
+            urwid.Padding(urwid.Text("Name: {}".format(data["longName"])), left=5),
+            urwid.Padding(urwid.Text("Website: {}".format(data["website"])), left=5),
             urwid.Padding(urwid.Text("Industry: {}".format(data["industry"])), left=5),
             urwid.Padding(urwid.Text("Sector: {}".format(data["sector"])), left=5),
-            urwid.Padding(urwid.Text("Website: {}".format(data["website"])), left=5),
-            urwid.Padding(urwid.Text("CEO: {}\n".format(data["CEO"])), left=5),
-            urwid.Text(("title", "DESCRIPTION")),
-            urwid.Padding(urwid.Text(data["description"]), left=5),
-        ])
+            urwid.Text(("title", "SUMMARY")),
+            urwid.Padding(urwid.Text(data["longBusinessSummary"]), left=5),
+        ]
+    )
 
-        padding = urwid.Padding(Scrollable(pile), left=1, right=1)
+    """
+                
+        
+        
+        urwid.Padding(urwid.Text("Website: {}".format(data["website"])), left=5),
+        urwid.Padding(urwid.Text("CEO: {}\n".format(data["CEO"])), left=5),
+        urwid.Text(("title", "DESCRIPTION")),
+        urwid.Padding(urwid.Text(data["description"]), left=5),
+    """
 
-        return padding
-    except Exception as e:
-        return None
+    padding = urwid.Padding(Scrollable(pile), left=1, right=1)
+
+    return padding
 
 
 def help():
-    print(''.join([BOLD, "stocki {} – Made by @andrewrporter".format(VERSION), END, "\n"]))
+    print("".join([BOLD, "stocki {} – Made by @andrewrporter".format(VERSION), END, "\n"]))
     print("The CLI for fetching stock market data.\n")
-    print(''.join([UNDERLINE, "Usage", END, ":", " $ stocki ", YELLOW, "[ticker]", YELLOW, " [-v/--version]", YELLOW, " [-h/--help]", END]))
+    print(
+        "".join(
+            [
+                UNDERLINE,
+                "Usage",
+                END,
+                ":",
+                " $ stocki ",
+                YELLOW,
+                "[ticker]",
+                YELLOW,
+                " [-v/--version]",
+                YELLOW,
+                " [-h/--help]",
+                END,
+            ]
+        )
+    )
 
 
 def version():
@@ -278,7 +299,7 @@ def version():
 
 def main():
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument("ticker", type=str, nargs='?')
+    parser.add_argument("ticker", type=str, nargs="?")
     parser.add_argument("-v", "--version", action="store_true")
     parser.add_argument("-h", "--help", action="store_true")
     args = parser.parse_args()
@@ -289,7 +310,7 @@ def main():
         if content:
             App(content)
         else:
-            print(''.join([RED, "stocki doesn't recognize: '{}'".format(args.ticker), END]))
+            print("".join([RED, "stocki doesn't recognize: '{}'".format(args.ticker), END]))
     elif args.version:
         version()
     elif args.help:
