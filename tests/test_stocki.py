@@ -27,7 +27,9 @@ class TestStocki(TestCase):
 
         style = pycodestyle.StyleGuide({"ignore": "E501"})
         result = style.check_files(file_list)
-        self.assertEqual(result.total_errors, 0, "Found code style errors (and warnings).")
+        self.assertEqual(
+            result.total_errors, 0, "Found code style errors (and warnings)."
+        )
 
 
 if __name__ == "__main__":

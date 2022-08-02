@@ -1,26 +1,21 @@
-# coding: utf-8
 import argparse
-
 import urwid
 import yfinance as yf
 from urwid.widget import BOX, FIXED, FLOW
-
-VERSION = "0.2.0"
-
-
-SCROLL_LINE_UP = "line up"
-SCROLL_LINE_DOWN = "line down"
-SCROLL_PAGE_UP = "page up"
-SCROLL_PAGE_DOWN = "page down"
-SCROLL_TO_TOP = "to top"
-SCROLL_TO_END = "to end"
-
-
-YELLOW = "\033[33m"
-RED = "\033[31m"
-BOLD = "\033[1m"
-UNDERLINE = "\033[4m"
-END = "\033[0m"
+from constants import (
+    VERSION,
+    SCROLL_LINE_UP,
+    SCROLL_LINE_DOWN,
+    SCROLL_PAGE_UP,
+    SCROLL_PAGE_DOWN,
+    SCROLL_TO_END,
+    SCROLL_TO_TOP,
+    YELLOW,
+    RED,
+    BOLD,
+    UNDERLINE,
+    END,
+)
 
 
 class Scrollable(urwid.WidgetDecoration):
@@ -171,9 +166,12 @@ class Scrollable(urwid.WidgetDecoration):
         else:
             self._trim_top = ensure_bounds(trim_top)
 
-        if self._old_cursor_coords is not None and self._old_cursor_coords != canv.cursor:
+        if (
+            self._old_cursor_coords is not None
+            and self._old_cursor_coords != canv.cursor
+        ):
             self._old_cursor_coords = None
-            curscol, cursrow = canv.cursor
+            _, cursrow = canv.cursor
             if cursrow < self._trim_top:
                 self._trim_top = cursrow
             elif cursrow >= self._trim_top + maxrow:
@@ -210,16 +208,21 @@ class Scrollable(urwid.WidgetDecoration):
 
 class App:
     def __init__(self, content):
-        self._palette = [("menu", "black", "light gray", "standout"), ("title", "default,bold", "default", "bold")]
+        self._palette = [
+            ("menu", "black", "light gray", "standout"),
+            ("title", "default,bold", "default", "bold"),
+        ]
 
-        menu = urwid.Text([u"\n", ("menu", u" Q "), ("light gray", u" Quit")])
+        menu = urwid.Text(["\n", ("menu", " Q "), ("light gray", " Quit")])
         layout = urwid.Frame(body=content, footer=menu)
 
-        main_loop = urwid.MainLoop(layout, self._palette, unhandled_input=self._handle_input)
+        main_loop = urwid.MainLoop(
+            layout, self._palette, unhandled_input=self._handle_input
+        )
         main_loop.run()
 
     def _handle_input(self, input):
-        if input in ("q", "Q"):
+        if input in ["q", "Q"]:
             raise urwid.ExitMainLoop()
 
 
@@ -240,14 +243,27 @@ def load(ticker_str):
 
     pile = urwid.Pile(
         [
-            urwid.Text("STOCKI: The CLI Interface for fetching stock market data\n", align="center"),
+            urwid.Text(
+                "STOCKI: The CLI Interface for fetching stock market data\n",
+                align="center",
+            ),
             urwid.Text(("title", "{} OVERVIEW".format(ticker_str))),
             urwid.Padding(urwid.Text("Price: {}".format(current_price)), left=5),
-            urwid.Padding(urwid.Text("Change: {:.2f} ({:.2f}%)".format(change, change_percent)), left=5),
-            urwid.Padding(urwid.Text("Volume: {}".format(data["volume"])), left=5),
-            urwid.Padding(urwid.Text("Market Cap: {}".format(data["marketCap"])), left=5),
             urwid.Padding(
-                urwid.Text("52 Week Range: {} - {}".format(data["fiftyTwoWeekLow"], data["fiftyTwoWeekHigh"])), left=5
+                urwid.Text("Change: {:.2f} ({:.2f}%)".format(change, change_percent)),
+                left=5,
+            ),
+            urwid.Padding(urwid.Text("Volume: {}".format(data["volume"])), left=5),
+            urwid.Padding(
+                urwid.Text("Market Cap: {}".format(data["marketCap"])), left=5
+            ),
+            urwid.Padding(
+                urwid.Text(
+                    "52 Week Range: {} - {}".format(
+                        data["fiftyTwoWeekLow"], data["fiftyTwoWeekHigh"]
+                    )
+                ),
+                left=5,
             ),
             urwid.Text(("title", "COMPANY INFO")),
             urwid.Padding(urwid.Text("Name: {}".format(data["longName"])), left=5),
@@ -263,22 +279,24 @@ def load(ticker_str):
 
 
 def help():
-    print("".join([BOLD, "stocki {} – Made by @andrewrporter".format(VERSION), END, "\n"]))
-    print("The CLI for fetching stock market data.\n")
     print(
         "".join(
             [
+                BOLD,
+                f"stocki {VERSION} - Made by @andrewrporter",
+                END,
+                "\nThe CLI for fetching stock market data.\n",
+            ]
+        ),
+        "".join(
+            [
+                "\n",
                 UNDERLINE,
                 "Usage",
                 END,
-                ":",
-                " $ stocki ",
+                ": $ stocki ",
                 YELLOW,
-                "[ticker]",
-                YELLOW,
-                " [-v/--version]",
-                YELLOW,
-                " [-h/--help]",
+                "[ticker] [-v/--version] [-h/--help]",
                 END,
             ]
         )
@@ -302,7 +320,11 @@ def main():
         if content:
             App(content)
         else:
-            print("".join([RED, "stocki doesn't recognize: '{}'".format(args.ticker), END]))
+            print(
+                "".join(
+                    [RED, "stocki doesn't recognize: '{}'".format(args.ticker), END]
+                )
+            )
     elif args.version:
         version()
     elif args.help:
